@@ -163,7 +163,7 @@
         <div id="game-name">Welcome, <span id="player-name"></span>!</div>
         <div id="scoreboard">Score: <span id="score">0</span></div>
         <div id="target-container">Type the character shown in the bubble!</div>
-        <div id="timer">Time Left: <span id="time-left">30</span> sec</div>
+        <div id="timer">Time Left: <span id="time-left">5 min 0 sec</span></div>
         <div id="bubbles-container"></div>
         <input type="text" id="user-input" placeholder="Type here" maxlength="1">
     </div>
@@ -185,46 +185,42 @@
         let score = 0;
         let incorrectCount = 0;
         const maxIncorrect = 3;
-        let roundTimeLeft = 10;
-        let totalGameTime = 300;  
+        let totalGameTime = 300;  // Total time in seconds
         let currentTarget;
         let timerInterval, bubbleInterval;
         let gameInProgress = false;
+
         function startGame() {
             document.getElementById('login-container').style.display = 'none';
             document.getElementById('game-over-container').style.display = 'none';
             document.getElementById('game-container').style.display = 'block';
             score = 0;
             incorrectCount = 0;
-            roundTimeLeft = 10;
-            totalGameTime = 300; 
             document.getElementById('score').innerText = score;
             startRound();
             gameInProgress = true;
-            timerInterval = setInterval(updateTimer, 1000);
+            timerInterval = setInterval(updateTimer, 1000);  // Update every second
         }
-        document.getElementById('restart-button').addEventListener('click', () => {
-            startGame();
-        });
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            document.getElementById('player-name').innerText = username;
-            startGame();
-        });
+
         function startRound() {
             document.getElementById('bubbles-container').innerHTML = '';
             currentTarget = alphabetAndNumbers[Math.floor(Math.random() * alphabetAndNumbers.length)];
             document.getElementById('target-container').innerText = currentTarget;
             createBubble();
         }
+
         function updateTimer() {
-            totalGameTime--;
-            document.getElementById('time-left').innerText = Math.ceil(totalGameTime / 60) + ' min';
-            if (totalGameTime <= 0 || incorrectCount >= maxIncorrect) {
-                endGame();
+            if (gameInProgress) {
+                totalGameTime--;
+                const minutes = Math.floor(totalGameTime / 60);
+                const seconds = totalGameTime % 60;
+                document.getElementById('time-left').innerText = `${minutes} min ${seconds} sec`;
+                if (totalGameTime <= 0 || incorrectCount >= maxIncorrect) {
+                    endGame();
+                }
             }
         }
+
         function endGame() {
             clearInterval(timerInterval);
             clearInterval(bubbleInterval);
@@ -233,6 +229,7 @@
             document.getElementById('final-score').innerText = 'Your Score: ' + score;
             gameInProgress = false;
         }
+
         function createBubble() {
             const bubble = document.createElement('div');
             bubble.className = 'bubble';
@@ -243,8 +240,9 @@
             setTimeout(() => {
                 bubble.remove();
                 if (gameInProgress) startRound(); 
-            }, 10000);
+            }, 10000);  // Bubble remains for 10 seconds
         }
+
         document.getElementById('user-input').addEventListener('input', function(e) {
             const userInput = e.target.value.toUpperCase();
             if (userInput === currentTarget) {
@@ -256,6 +254,18 @@
             }
             e.target.value = ''; 
         });
+
+        document.getElementById('restart-button').addEventListener('click', () => {
+            startGame();
+        });
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            document.getElementById('player-name').innerText = username;
+            startGame();
+        });
     </script>
 </body>
 </html>
+
